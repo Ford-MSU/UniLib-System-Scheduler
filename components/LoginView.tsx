@@ -94,17 +94,6 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
                 alt="Student studying in library" 
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-black/20 flex items-end p-8">
-                 <div className="text-white">
-                    <div className="flex gap-2 items-center mb-2">
-                        <button className="w-8 h-8 flex items-center justify-center bg-white/20 backdrop-blur rounded-full hover:bg-white/30">
-                           <span className="sr-only">Play</span>
-                           ▶
-                        </button>
-                        <span className="text-sm font-medium">0:15 / 3:25</span>
-                    </div>
-                 </div>
-            </div>
         </div>
       </div>
       
