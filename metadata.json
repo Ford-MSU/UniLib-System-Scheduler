@@ -1,0 +1,5 @@
+{
+  "name": "University Library Resource Scheduler",
+  "description": "A system for students to book library resources like computers and study rooms in advance, and for staff to manage these resources and bookings. This replaces the first-come, first-served model with an organized reservation system.",
+  "requestFramePermissions": []
+}
