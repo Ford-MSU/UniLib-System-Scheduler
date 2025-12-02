@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { MOCK_RESOURCES, MOCK_USERS, MOCK_BOOKINGS } from './constants';
+import { MOCK_RESOURCES, MOCK_USERS, MOCK_BOOKINGS, CHECK_IN_GRACE_PERIOD_MS } from './constants';
 import { Resource, Booking, User, UserRole, BookingStatus } from './types';
 import Header from './components/Header';
 import StudentView from './components/StudentView';
@@ -31,11 +31,42 @@ const App: React.FC = () => {
   // Start with a date, default to today
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
-  // 15-Minute Rule Check (Auto No-Show)
+  /// ============================================================
+  // DEMO MODE: Rule Check (Auto No-Show) based on bookedAt Timestamp
+  // This is currently ACTIVE for your documentation demo (1 Minute)
+  // ============================================================
   useEffect(() => {
     const checkLateBookings = () => {
-      // ----- DISABLED FOR DEMO
-      /*
+      const now = Date.now();
+
+      setBookings(prevBookings => 
+        prevBookings.map(booking => {
+          // Only checks active CONFIRMED bookings that have a 'bookedAt' timestamp (newly created ones)
+          if (booking.status === BookingStatus.CONFIRMED && booking.bookedAt) {
+             const deadline = booking.bookedAt + CHECK_IN_GRACE_PERIOD_MS;
+             
+             if (now > deadline) {
+                // If grace period passed and user hasn't checked in, mark as NO_SHOW
+                return { ...booking, status: BookingStatus.NO_SHOW };
+             }
+          }
+          return booking;
+        })
+      );
+    };
+
+    // Run every 1 second to make the demo snappy
+    const interval = setInterval(checkLateBookings, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // ============================================================
+  // REAL WORLD MODE: Rule Check (Auto No-Show) based on Time Slots
+  // RESTORE THIS LATER: Uncomment this useEffect and comment out the Demo one above.
+  // ============================================================
+  /*
+  useEffect(() => {
+    const checkLateBookings = () => {
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
 
@@ -51,9 +82,8 @@ const App: React.FC = () => {
           try {
             const bookingStart = getSlotDate(booking.date, booking.timeSlot);
             
-            // Determine 15 minute buffer (Grace Period)
-            // The limit starts when the selected Date and Time Slot aligns with the real Date and Time.
-            const lateThreshold = new Date(bookingStart.getTime() + 15 * 60000);
+            // Determine buffer (Grace Period)
+            const lateThreshold = new Date(bookingStart.getTime() + CHECK_IN_GRACE_PERIOD_MS);
 
             // If current time is past the threshold and user hasn't checked in, mark as NO_SHOW
             if (now > lateThreshold) {
@@ -67,14 +97,13 @@ const App: React.FC = () => {
           return booking;
         })
       );
-      */
     };
-
-    // Run immediately and then every minute
-    checkLateBookings();
-    const interval = setInterval(checkLateBookings, 60000);
+    
+    // Check every minute
+    const interval = setInterval(checkLateBookings, 60000); 
     return () => clearInterval(interval);
   }, []);
+  */
 
 
   const handleRoleChange = (role: UserRole) => {
@@ -146,7 +175,18 @@ const App: React.FC = () => {
     const booking = bookings.find(b => b.id === bookingId);
     if (!booking) return;
 
-    // ----- DISABLED FOR DEMO
+    // ============================================================
+    // DEMO MODE: Checks Disabled
+    // Allows immediate check-in to beat the 1-minute timer
+    // ============================================================
+    setBookings(prevBookings => prevBookings.map(b => 
+        b.id === bookingId ? { ...b, status: BookingStatus.PENDING_CHECK_IN } : b
+    ));
+
+    // ============================================================
+    // REAL WORLD MODE: Strict Time Validation
+    // RESTORE THIS LATER: Remove the block above and Uncomment this block.
+    // ============================================================
     /*
     const now = new Date();
     const todayStr = now.toISOString().split('T')[0];
@@ -162,17 +202,17 @@ const App: React.FC = () => {
       const bookingStart = getSlotDate(booking.date, booking.timeSlot);
       
       // Allow check-in 15 minutes before start
-      const checkInStartWindow = new Date(bookingStart.getTime() - 15 * 60000);
+      const checkInStartWindow = new Date(bookingStart.getTime() - CHECK_IN_GRACE_PERIOD_MS);
       // Close check-in 15 minutes after start (Grace Period)
-      const checkInEndWindow = new Date(bookingStart.getTime() + 15 * 60000);
+      const checkInEndWindow = new Date(bookingStart.getTime() + CHECK_IN_GRACE_PERIOD_MS);
 
       if (now < checkInStartWindow) {
-        alert(`It is too early to check in. Check-in becomes available at ${checkInStartWindow.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} (15 mins before).`);
+        alert(`It is too early to check in. Check-in becomes available at ${checkInStartWindow.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}.`);
         return;
       }
 
       if (now > checkInEndWindow) {
-        alert("You are too late. The 15-minute grace period for check-in has expired. Your booking is marked as No Show.");
+        alert("You are too late. The grace period for check-in has expired. Your booking is marked as No Show.");
         // Immediately mark as No Show to reflect reality
         setBookings(prevBookings => prevBookings.map(b => 
           b.id === bookingId ? { ...b, status: BookingStatus.NO_SHOW } : b
@@ -190,10 +230,6 @@ const App: React.FC = () => {
       alert("System error validating time.");
     }
     */
-    // DOCUMENTATION MODE: DIRECT SUCCESS
-    setBookings(prevBookings => prevBookings.map(b => 
-        b.id === bookingId ? { ...b, status: BookingStatus.PENDING_CHECK_IN } : b
-    ));
 
   }, [bookings]);
 

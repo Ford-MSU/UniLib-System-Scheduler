@@ -1,7 +1,6 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Booking, Resource, User, UserRole, ResourceType, BookingStatus } from '../types';
-import { MOCK_USERS } from '../constants';
+import { MOCK_USERS, CHECK_IN_GRACE_PERIOD_MS } from '../constants';
 import { ComputerIcon, RoomIcon } from './icons/ResourceIcons';
 
 interface BookingListProps {
@@ -17,6 +16,22 @@ interface BookingListProps {
   showCheckInButton?: boolean;
   showUserName?: boolean;
 }
+
+// Internal component for the timer
+const CountdownTimer: React.FC<{ targetDate: number }> = ({ targetDate }) => {
+  const [timeLeft, setTimeLeft] = useState(targetDate - Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft(targetDate - Date.now());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [targetDate]);
+
+  if (timeLeft <= 0) return <span className="text-red-700 font-bold text-xs bg-red-100 px-2 py-0.5 rounded ml-2">Timed Out</span>;
+  
+  return <span className="text-red-600 font-bold text-xs bg-red-50 border border-red-200 px-2 py-0.5 rounded ml-2 animate-pulse">⏰ Expires in {Math.ceil(timeLeft / 1000)}s</span>;
+};
 
 const BookingList: React.FC<BookingListProps> = ({ 
   bookings, 
@@ -61,7 +76,6 @@ const BookingList: React.FC<BookingListProps> = ({
 
         // Determine card style based on status
         let cardStyle = "border-gray-200";
-        let statusStyle = "";
         
         if (isPendingCheckIn || isPendingCheckOut) {
             if (onConfirmCheckIn || onConfirmCheckOut) { // Staff view pending
@@ -82,8 +96,15 @@ const BookingList: React.FC<BookingListProps> = ({
                 {resource.type === ResourceType.COLLAB_ROOM && <RoomIcon className="h-5 w-5" />}
               </div>
               <div>
-                <p className={`font-bold text-gray-800 ${(isCancelled || isNoShow) ? 'line-through text-gray-400' : ''}`}>{resource.name}</p>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center">
+                    <p className={`font-bold text-gray-800 ${(isCancelled || isNoShow) ? 'line-through text-gray-400' : ''}`}>{resource.name}</p>
+                    {/* Visual Countdown Timer for CONFIRMED bookings with a timestamp */}
+                    {booking.status === BookingStatus.CONFIRMED && booking.bookedAt && (
+                        <CountdownTimer targetDate={booking.bookedAt + CHECK_IN_GRACE_PERIOD_MS} />
+                    )}
+                </div>
+                
+                <div className="flex items-center gap-2 mt-1">
                     <span className={`text-sm font-mono text-gray-600 bg-gray-50 px-2 py-0.5 rounded ${(isCancelled || isNoShow) ? 'line-through opacity-50' : ''}`}>{booking.timeSlot}</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                         booking.status === BookingStatus.CHECKED_IN ? 'bg-green-100 text-green-700' :

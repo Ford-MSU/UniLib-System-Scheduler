@@ -12,6 +12,11 @@ export const TIME_SLOTS: string[] = [
   '4:00 PM - 5:00 PM',
 ];
 
+// Configuration for Check-In Grace Period
+// Current: 1 Minute (For Documentation/Demo)
+// Future: Change this to `15 * 60 * 1000` for the 15-minute policy
+export const CHECK_IN_GRACE_PERIOD_MS = 60 * 1000; 
+
 export const MOCK_RESOURCES: Resource[] = [
   { id: 'comp-1', name: 'Computer 1 (Solo)', type: ResourceType.COMPUTER, description: 'High-performance PC' },
   { id: 'comp-2', name: 'Computer 2 (Solo)', type: ResourceType.COMPUTER, description: 'High-performance PC' },

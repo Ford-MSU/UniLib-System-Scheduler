@@ -28,6 +28,7 @@ export interface Booking {
   timeSlot: string;
   date: string; // YYYY-MM-DD format
   status: BookingStatus;
+  bookedAt?: number; // Timestamp for demo/documentation purposes (1-minute timer)
 }
 
 export enum UserRole {
