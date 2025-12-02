@@ -146,7 +146,7 @@ const App: React.FC = () => {
     const booking = bookings.find(b => b.id === bookingId);
     if (!booking) return;
 
-    //
+    // ----- DISABLED FOR DEMO
     /*
     const now = new Date();
     const todayStr = now.toISOString().split('T')[0];

@@ -34,21 +34,4 @@ export const MOCK_USERS: { [key in UserRole]: User } = {
 
 // Mock bookings to demonstrate "Occupied" status
 const today = new Date().toISOString().split('T')[0];
-export const MOCK_BOOKINGS: Booking[] = [
-  {
-    id: 'mock-b-1',
-    resourceId: 'comp-1',
-    userId: 'student-999', // Different student
-    timeSlot: '9:00 AM - 10:00 AM',
-    date: today,
-    status: BookingStatus.CONFIRMED
-  },
-  {
-    id: 'mock-b-2',
-    resourceId: 'room-1',
-    userId: 'student-999',
-    timeSlot: '1:00 PM - 2:00 PM',
-    date: today,
-    status: BookingStatus.CHECKED_IN
-  }
-];
+export const MOCK_BOOKINGS: Booking[] = [];
