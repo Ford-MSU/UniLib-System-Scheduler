@@ -28,17 +28,20 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, bookings, current
 
   const handleBookClick = (timeSlot: string) => {
     const success = onBook(resource.id, timeSlot);
+    // Only show success animation if explicitly returned true.
+    // If false (e.g. Modal opened or validation failed), do nothing here.
+    // Specific error alerts are handled by the parent component (App.tsx or StudentView.tsx).
     if(success) {
       setShowSuccess(timeSlot);
-      setTimeout(() => setShowSuccess(null), 2000);
-    } else {
-        // Fallback alert if logic fails (e.g. race condition)
-        alert("Unable to book this slot.");
+      setTimeout(() => setShowSuccess(null), 2000);    
     }
   };
 
   // Helper to check if slot is past
   const isSlotPast = (timeSlot: string) => {
+      // ----- DISABLED FOR DEMO
+      return false;
+      /*
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
 
@@ -59,6 +62,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, bookings, current
       // Strict check: If current time is greater than slot start time, it's unavailable for booking.
       // NOTE: This prevents late booking. Check-in logic handles existing bookings separately.
       return now > slotStartTime;
+      */
   };
 
   return (

@@ -34,6 +34,8 @@ const App: React.FC = () => {
   // 15-Minute Rule Check (Auto No-Show)
   useEffect(() => {
     const checkLateBookings = () => {
+      // ----- DISABLED FOR DEMO
+      /*
       const now = new Date();
       const todayStr = now.toISOString().split('T')[0];
 
@@ -65,6 +67,7 @@ const App: React.FC = () => {
           return booking;
         })
       );
+      */
     };
 
     // Run immediately and then every minute
@@ -89,6 +92,7 @@ const App: React.FC = () => {
     );
 
     if (isSlotTaken) {
+        alert("This slot has just been taken by another user.");
         return false;
     }
 
@@ -142,6 +146,8 @@ const App: React.FC = () => {
     const booking = bookings.find(b => b.id === bookingId);
     if (!booking) return;
 
+    //
+    /*
     const now = new Date();
     const todayStr = now.toISOString().split('T')[0];
     
@@ -183,6 +189,12 @@ const App: React.FC = () => {
       console.error("Time validation error", e);
       alert("System error validating time.");
     }
+    */
+    // DOCUMENTATION MODE: DIRECT SUCCESS
+    setBookings(prevBookings => prevBookings.map(b => 
+        b.id === bookingId ? { ...b, status: BookingStatus.PENDING_CHECK_IN } : b
+    ));
+
   }, [bookings]);
 
   // Student requests check-out
