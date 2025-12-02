@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Booking, Resource, User, UserRole, ResourceType, BookingStatus } from '../types';
 import { MOCK_USERS, CHECK_IN_GRACE_PERIOD_MS } from '../constants';

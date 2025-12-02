@@ -31,7 +31,7 @@ const App: React.FC = () => {
   // Start with a date, default to today
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
-  /// ============================================================
+  // ============================================================
   // DEMO MODE: Rule Check (Auto No-Show) based on bookedAt Timestamp
   // This is currently ACTIVE for your documentation demo (1 Minute)
   // ============================================================
@@ -157,7 +157,8 @@ const App: React.FC = () => {
       userId: currentUser.id,
       timeSlot,
       date: selectedDate,
-      status: BookingStatus.CONFIRMED
+      status: BookingStatus.CONFIRMED,
+      bookedAt: Date.now() // Start the timer immediately for documentation demo
     };
     setBookings(prevBookings => [...prevBookings, newBooking]);
     return true;
